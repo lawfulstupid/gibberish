@@ -67,14 +67,9 @@ function createGenerator(sample: string, accuracy = 2): GibberishGen {
   const genNext = analyse(sample, accuracy);
   return function generate(length: number) {
     let text = '';
-    while (text.length < length) {
+    while (text.length < length || text.slice(-1) !== '.') {
       text += genNext(text.slice(-accuracy));
     }
     return text;
   }
 }
-
-// function load(file: string, accuracy: number): GibberishGen {
-//   let sample = fs.readFileSync(file).toString();
-//   return createGenerator(sample, accuracy);
-// }
