@@ -1,11 +1,14 @@
 import _ from 'lodash';
-import 'fs';
+import * as fs from 'fs';
 
-export function analyse(sample, maxAccuracy = 2) {
+type SequenceMap = { [sequence: string]: CharCounter };
+type CharCounter = { [char: string]: number };
+
+export function analyse(sample: string, maxAccuracy: number = 2) {
   sample = preprocess(sample);
 
   // Count sequences
-  const map = {};
+  const map: SequenceMap = {};
   for (let accuracy = 1; accuracy <= maxAccuracy; accuracy++) {
     for (let i = 0; i < sample.length; i++) {
       const seq = sample.slice(i - accuracy, i);
@@ -19,8 +22,8 @@ export function analyse(sample, maxAccuracy = 2) {
   // Transform into functions
   const genMap = _.mapValues(map, dict => {
     const total = _(dict).values().sum();
-    return function (r) {
-      let n = r * total;
+    return function (rand: number) {
+      let n = rand * total;
       for (let char in dict) {
         if (n <= dict[char]) return char;
         n -= dict[char];
@@ -28,23 +31,22 @@ export function analyse(sample, maxAccuracy = 2) {
     };
   });
 
-  return function genNext(seq, r = Math.random()) {
+  return function genNext(seq: string, rand = Math.random()) {
     if (!seq || seq === '') {
-      return genNext(' ', r);
+      return genNext(' ', rand);
     } else if (seq in genMap) {
-      return genMap[seq](r);
+      return genMap[seq](rand);
     } else {
-      return genNext(seq.slice(1), r);
+      return genNext(seq.slice(1), rand);
     }
   }
 }
 
-function preprocess(sample) {
+function preprocess(sample: string) {
   return sample.toLowerCase()
     // convert and compress whitespace to single space
     .replaceAll(/\s+/g, ' ')
     // substitute similar chars
-    .replaceAll()
     .replaceAll('—', '-')
     // .replaceAll(/[àáâãäå]/g, 'a')
     .replaceAll('æ', 'ae')
@@ -60,9 +62,9 @@ function preprocess(sample) {
     .replaceAll(/[^0-9a-zA-Z& !?,.;:—\-]/g, '')
 }
 
-export function createGenerator(sample, accuracy = 2) {
+export function createGenerator(sample: string, accuracy = 2) {
   const genNext = analyse(sample, accuracy);
-  return function generate(length) {
+  return function generate(length: number) {
     let text = '';
     while (text.length < length) {
       text += genNext(text.slice(-accuracy));
@@ -71,7 +73,7 @@ export function createGenerator(sample, accuracy = 2) {
   }
 }
 
-export function load(file, accuracy) {
+export function load(file: string, accuracy: number) {
   let sample = fs.readFileSync(file).toString();
   return createGenerator(sample, accuracy);
 }

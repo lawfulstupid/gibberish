@@ -1,11 +1,19 @@
 {
-  "name": "giberrish",
+  "name": "gibberish",
   "version": "0.0.1",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {},
+  "main": "index.ts",
+  "scripts": {
+    "build": "npx tsc"
+  },
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^24.1.0",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
   }
 }
