@@ -1,0 +1,11 @@
+{
+  "name": "giberrish",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
