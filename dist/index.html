@@ -5,7 +5,13 @@
 	<title>Gibberish Generator</title>
 	<script src="index.js"></script>
   <style>
-    [hidden=true] { display: none; }
+    [hidden=true] {
+      display: none;
+    }
+    body {
+      display: block;
+      max-width: 800px;
+    }
   </style>
 </head>
 <body style="font-family: sans-serif">
@@ -37,7 +43,7 @@
     <input id="length" pattern="[0-9]+" maxlength="-1" value="500"></input>
     <button id="btnGenerate" onclick="generate()">Generate!</button>
     <br><br>
-    <span id="output" width="500"></span>
+    <span id="output"></span>
   </div>
 </body>
 <script>
