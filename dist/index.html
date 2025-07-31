@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body style="font-family: sans-serif">
-  <label for="sample">Reference text:</label><br>
+  <label for="sample">Reference</label><br>
   <select id="sample" onchange="updateSampleChoice()">
     <option value="alice.txt">[EN] Alice's Adventures in Wonderland by Lewis Carroll</option>
     <option value="frankenstein.txt">[EN] Frankenstein by Mary Shelley</option>
@@ -24,7 +24,7 @@
     <textarea id="sample-custom" rows="20" cols="80" maxlength="-1"></textarea>
   </div>
   <br><br>
-  <label for="accuracy" >Accuracy:</label>
+  <label for="accuracy" >Accuracy</label>
   <br>
   <input id="accuracy" pattern="[0-9]+" maxlength="2" value="4"></input>
 	<button id="btnLoad" onclick="load()">Load</button>
