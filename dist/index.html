@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Gibberish Generator</title>
+	<script src="index.js"></script>
+</head>
+<body style="font-family: sans-serif">
+  <span>Reference text:</span>
+  <br>
+	<textarea id="sample" rows="20" cols="80" maxlength="-1"></textarea>
+  <br>
+  <span>Accuracy:</span>
+  <br>
+  <input id="accuracy" pattern="[0-9]+" maxlength="1" value="2"></input>
+	<button id="btnLoad" onclick="load()">Load</button>
+	<br><br>
+  <input id="length" pattern="[0-9]+" maxlength="-1" value="100" disabled="true"></input>
+  <button id="btnGenerate" onclick="generate()" disabled="true">Generate!</button>
+  <br><br>
+	<span id="output"></span>
+</body>
+<script>
+  let generator = null;
+
+  function load() {
+    document.getElementById('btnLoad').disabled = true;
+    document.getElementById('btnGenerate').disabled = true;
+    document.getElementById('length').disabled = true;
+
+    try {
+      var sample = document.getElementById('sample').value;
+      var accuracy = document.getElementById('accuracy').value;
+      generator = createGenerator(sample, accuracy);
+
+      document.getElementById('btnGenerate').disabled = false;
+      document.getElementById('length').disabled = false;
+    } finally {
+      document.getElementById('btnLoad').disabled = false;
+    }
+  }
+
+  function generate() {
+    var length = document.getElementById('length').value;
+		var output = document.getElementById('output');
+    try {
+      output.innerHTML = generator(length);
+    } catch (err) {
+      console.error(err);
+      output.innerHTML = err.message;
+    }
+  }
+
+	document.getElementById('sample').addEventListener('keypress', event => {
+		if (event.key === 'Enter') load();
+	});
+	document.getElementById('accuracy').addEventListener('keypress', event => {
+		if (event.key === 'Enter') load();
+	});
+	document.getElementById('length').addEventListener('keypress', event => {
+		if (event.key === 'Enter') generate();
+	});
+</script>
+</html>

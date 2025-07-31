@@ -1,14 +1,11 @@
 {
   "name": "gibberish",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "build": "npx tsc"
+    "build": "tsc"
   },
   "license": "ISC",
-  "dependencies": {
-    "lodash": "^4.17.21"
-  },
   "devDependencies": {
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.1.0",

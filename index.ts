@@ -1,15 +1,15 @@
-import _ from 'lodash';
-import * as fs from 'fs';
-
-type SequenceMap = { [sequence: string]: CharCounter };
+type SequenceMap<A> = { [sequence: string]: A };
 type CharCounter = { [char: string]: number };
+type CharGen = ((rand: number) => string);
+type NextCharGen = ((sequence: string, rand?: number) => string);
+type GibberishGen = ((length: number) => string);
 
-export function analyse(sample: string, maxAccuracy: number = 2) {
+function analyse(sample: string, maxAccuracy: number = 2): NextCharGen {
   sample = preprocess(sample);
 
   // Count sequences
-  const map: SequenceMap = {};
-  for (let accuracy = 1; accuracy <= maxAccuracy; accuracy++) {
+  const map: SequenceMap<CharCounter> = {};
+  for (let accuracy = 0; accuracy <= maxAccuracy; accuracy++) {
     for (let i = 0; i < sample.length; i++) {
       const seq = sample.slice(i - accuracy, i);
       const next = sample[i];
@@ -20,21 +20,22 @@ export function analyse(sample: string, maxAccuracy: number = 2) {
   }
 
   // Transform into functions
-  const genMap = _.mapValues(map, dict => {
-    const total = _(dict).values().sum();
-    return function (rand: number) {
+  const genMap: SequenceMap<CharGen> = {};
+  for (let key in map) {
+    const dict = map[key];
+    const total = Object.values(dict).reduce((a, b) => a + b);
+    genMap[key] = function (rand: number) {
       let n = rand * total;
       for (let char in dict) {
         if (n <= dict[char]) return char;
         n -= dict[char];
       }
+      throw new Error('incomplete distribution');
     };
-  });
+  }
 
-  return function genNext(seq: string, rand = Math.random()) {
-    if (!seq || seq === '') {
-      return genNext(' ', rand);
-    } else if (seq in genMap) {
+  return function genNext(seq: string, rand: number = Math.random()) {
+    if (seq in genMap) {
       return genMap[seq](rand);
     } else {
       return genNext(seq.slice(1), rand);
@@ -42,7 +43,7 @@ export function analyse(sample: string, maxAccuracy: number = 2) {
   }
 }
 
-function preprocess(sample: string) {
+function preprocess(sample: string): string {
   return sample.toLowerCase()
     // convert and compress whitespace to single space
     .replaceAll(/\s+/g, ' ')
@@ -62,7 +63,7 @@ function preprocess(sample: string) {
     .replaceAll(/[^0-9a-zA-Z& !?,.;:—\-]/g, '')
 }
 
-export function createGenerator(sample: string, accuracy = 2) {
+function createGenerator(sample: string, accuracy = 2): GibberishGen {
   const genNext = analyse(sample, accuracy);
   return function generate(length: number) {
     let text = '';
@@ -73,7 +74,7 @@ export function createGenerator(sample: string, accuracy = 2) {
   }
 }
 
-export function load(file: string, accuracy: number) {
-  let sample = fs.readFileSync(file).toString();
-  return createGenerator(sample, accuracy);
-}
+// function load(file: string, accuracy: number): GibberishGen {
+//   let sample = fs.readFileSync(file).toString();
+//   return createGenerator(sample, accuracy);
+// }
