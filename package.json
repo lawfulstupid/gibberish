@@ -1,9 +1,10 @@
 {
   "name": "gibberish",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "http-server dist"
   },
   "license": "ISC",
   "devDependencies": {
@@ -12,5 +13,8 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
   }
 }

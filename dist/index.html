@@ -4,37 +4,54 @@
 	<meta charset="utf-8">
 	<title>Gibberish Generator</title>
 	<script src="index.js"></script>
+  <style>
+    [hidden=true] { display: none; }
+  </style>
 </head>
 <body style="font-family: sans-serif">
-  <span>Reference text:</span>
+  <label for="sample">Reference text:</label><br>
+  <select id="sample" onchange="updateSampleChoice()">
+    <option value="alice.txt">[EN] Alice's Adventures in Wonderland by Lewis Carroll</option>
+    <option value="frankenstein.txt">[EN] Frankenstein by Mary Shelley</option>
+    <option value="moby-dick.txt">[EN] Moby Dick by Herman Melville</option>
+    <option value="20k-leagues.txt">[EN] Twenty Thousands Leagues under the Sea by Jules Verne</option>
+    <option value="quixote.txt">[ES] Don Quixote by Miguel de Cervantes</option>
+    <option value="monte-cristo.txt">[FR] Le Comte de Monte-Cristo by Alexandre Dumas</option>
+    <option value="">Custom</option>
+  </select>
+  <div id="sample-custom-area" hidden="true">
+    <br>
+    <textarea id="sample-custom" rows="20" cols="80" maxlength="-1"></textarea>
+  </div>
+  <br><br>
+  <label for="accuracy" >Accuracy:</label>
   <br>
-	<textarea id="sample" rows="20" cols="80" maxlength="-1"></textarea>
-  <br>
-  <span>Accuracy:</span>
-  <br>
-  <input id="accuracy" pattern="[0-9]+" maxlength="1" value="2"></input>
+  <input id="accuracy" pattern="[0-9]+" maxlength="2" value="4"></input>
 	<button id="btnLoad" onclick="load()">Load</button>
 	<br><br>
-  <input id="length" pattern="[0-9]+" maxlength="-1" value="100" disabled="true"></input>
-  <button id="btnGenerate" onclick="generate()" disabled="true">Generate!</button>
-  <br><br>
-	<span id="output"></span>
+  <div id="post-load" hidden="true">
+    <label for="length">Length</label>
+    <br>
+    <input id="length" pattern="[0-9]+" maxlength="-1" value="500"></input>
+    <button id="btnGenerate" onclick="generate()">Generate!</button>
+    <br><br>
+    <span id="output" width="500"></span>
+  </div>
 </body>
 <script>
   let generator = null;
 
   function load() {
     document.getElementById('btnLoad').disabled = true;
-    document.getElementById('btnGenerate').disabled = true;
-    document.getElementById('length').disabled = true;
+    document.getElementById('post-load').hidden = true;
+    document.getElementById('output').innerHTML = '';
 
     try {
-      var sample = document.getElementById('sample').value;
-      var accuracy = document.getElementById('accuracy').value;
-      generator = createGenerator(sample, accuracy);
-
-      document.getElementById('btnGenerate').disabled = false;
-      document.getElementById('length').disabled = false;
+      getSample(sample => {
+        var accuracy = document.getElementById('accuracy').value;
+        generator = createGenerator(sample, accuracy);
+        document.getElementById('post-load').hidden = false;
+      });
     } finally {
       document.getElementById('btnLoad').disabled = false;
     }
@@ -51,7 +68,33 @@
     }
   }
 
-	document.getElementById('sample').addEventListener('keypress', event => {
+  function updateSampleChoice() {
+    var sample = document.getElementById('sample').value;
+    var customSampleField = document.getElementById('sample-custom-area');
+    if (!sample) {
+      customSampleField.hidden = false;
+    } else {
+      customSampleField.hidden = true;
+    }
+  }
+
+  function getSample(next) {
+    var sampleFile = document.getElementById('sample').value;
+    if (!sampleFile) {
+      next(document.getElementById('sample-custom').value);
+    } else {
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+          next(xmlhttp.responseText);
+        }
+      }
+      xmlhttp.open('GET', sampleFile, true);
+      xmlhttp.send();
+    }
+  }
+
+	document.getElementById('sample-custom').addEventListener('keypress', event => {
 		if (event.key === 'Enter') load();
 	});
 	document.getElementById('accuracy').addEventListener('keypress', event => {
