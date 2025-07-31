@@ -1,0 +1,19 @@
+[hidden=true] {
+  display: none;
+}
+
+body {
+  display: block;
+}
+
+@media only screen and (orientation: landscape) {
+  body {
+    max-width: 800px;
+  }
+}
+
+@media only screen and (orientation: portrait) {
+  body {
+    zoom: 200%;
+  }
+}
