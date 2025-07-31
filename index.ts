@@ -49,6 +49,8 @@ function preprocess(sample: string): string {
     .replaceAll(/\s+/g, ' ')
     // substitute similar chars
     .replaceAll('—', '-')
+    .replaceAll(/[‘’′]/g, '\'')
+    .replaceAll(/[“”«»]/g, '"')
     // .replaceAll(/[àáâãäå]/g, 'a')
     .replaceAll('æ', 'ae')
     // .replaceAll('ç', 'c')
@@ -60,7 +62,19 @@ function preprocess(sample: string): string {
     // .replaceAll(/[ùúûü]/g, 'u')
     // .replaceAll(/[ýÿ]/g, 'y')
     // legal characters
-    .replaceAll(/[^0-9a-zA-Z& !?,.;:—\-]/g, '')
+    .replaceAll(/[^0-9a-zA-Z& !?,.;:'\-]/g, '')
+    .replaceAll(/('(?!\w))|((?<!\w)')/g, '')
+}
+
+function postprocess(text: string): string {
+  return text
+    // convert and compress whitespace
+    .replaceAll(/\s+/g, ' ')
+    // convert to sentence case
+    .replaceAll(/(^\w)|([.!?]\s+\w)|(\bi\b)/gi, substr => substr.toUpperCase())
+    // balance whitespace around dashes
+    .replaceAll(/\s(-+)(?![\s-])/g, ' $1 ')
+    .replaceAll(/(?<![\s-])(-+)\s/g, ' $1 ')
 }
 
 function createGenerator(sample: string, accuracy = 2): GibberishGen {
@@ -70,6 +84,6 @@ function createGenerator(sample: string, accuracy = 2): GibberishGen {
     while (text.length < length || text.slice(-1) !== '.') {
       text += genNext(text.slice(-accuracy));
     }
-    return text;
+    return postprocess(text);
   }
 }
