@@ -71,7 +71,7 @@ function postprocess(text: string): string {
     // convert and compress whitespace
     .replaceAll(/\s+/g, ' ')
     // convert to sentence case
-    .replaceAll(/(^\w)|([.!?]\s+\w)|(\bi\b)/gi, substr => substr.toUpperCase())
+    .replaceAll(/((^|[.!?])\s+[^\s])|(\bi\b)/gi, substr => substr.toUpperCase())
     // balance whitespace around dashes
     .replaceAll(/\s(-+)(?![\s-])/g, ' $1 ')
     .replaceAll(/(?<![\s-])(-+)\s/g, ' $1 ')
