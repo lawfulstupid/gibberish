@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Gibberish Generator</title>
-	<script src="index.js"></script>
   <link rel="stylesheet" href="styles.css">
+	<script src="dist/gibberish.js"></script>
 </head>
 <body style="font-family: sans-serif">
   <label for="sample">Reference</label><br>
@@ -63,7 +63,7 @@
 
   function generate() {
     var length = document.getElementById('length').value;
-		var output = document.getElementById('output');
+    var output = document.getElementById('output');
     try {
       output.innerHTML = generator(length);
     } catch (err) {
@@ -93,19 +93,19 @@
           next(xmlhttp.responseText);
         }
       }
-      xmlhttp.open('GET', sampleFile, true);
+      xmlhttp.open('GET', 'samples/' + sampleFile, true);
       xmlhttp.send();
     }
   }
 
-	document.getElementById('sample-custom').addEventListener('keypress', event => {
-		if (event.key === 'Enter') load();
-	});
-	document.getElementById('accuracy').addEventListener('keypress', event => {
-		if (event.key === 'Enter') load();
-	});
-	document.getElementById('length').addEventListener('keypress', event => {
-		if (event.key === 'Enter') generate();
-	});
+  document.getElementById('sample-custom').addEventListener('keypress', event => {
+    if (event.key === 'Enter') load();
+  });
+  document.getElementById('accuracy').addEventListener('keypress', event => {
+    if (event.key === 'Enter') load();
+  });
+  document.getElementById('length').addEventListener('keypress', event => {
+    if (event.key === 'Enter') generate();
+  });
 </script>
 </html>

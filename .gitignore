@@ -1,2 +1,2 @@
-dist/*.js
+public/dist
 node_modules

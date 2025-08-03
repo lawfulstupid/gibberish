@@ -4,7 +4,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "http-server dist"
+    "start": "http-server public"
   },
   "license": "ISC",
   "devDependencies": {
