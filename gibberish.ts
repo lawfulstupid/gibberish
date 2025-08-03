@@ -71,10 +71,11 @@ function postprocess(text: string): string {
     // convert and compress whitespace
     .replaceAll(/\s+/g, ' ')
     // convert to sentence case
-    .replaceAll(/((^|[.!?])\s*[^\s])|(\bi\b)/gi, substr => substr.toUpperCase())
+    .replaceAll(/((^|[.!?])\s*[^\s])|(\bi\b)/g, substr => substr.toUpperCase())
     // balance whitespace around dashes
     .replaceAll(/\s(-+)(?![\s-])/g, ' $1 ')
     .replaceAll(/(?<![\s-])(-+)\s/g, ' $1 ')
+    .replaceAll(/(^ )|( $)/g, '')
 }
 
 function createGenerator(sample: string, accuracy = 2): GibberishGen {
