@@ -9,7 +9,7 @@ function analyse(sample: string, maxAccuracy: number = 2): NextCharGen {
 
   // Count sequences
   const map: SequenceMap<CharCounter> = {};
-  for (let accuracy = 0; accuracy <= maxAccuracy; accuracy++) {
+  for (let accuracy = 1; accuracy <= maxAccuracy; accuracy++) {
     for (let i = 0; i < sample.length; i++) {
       const seq = sample.slice(i - accuracy, i);
       const next = sample[i];
@@ -35,7 +35,9 @@ function analyse(sample: string, maxAccuracy: number = 2): NextCharGen {
   }
 
   return function genNext(seq: string, rand: number = Math.random()) {
-    if (seq in genMap) {
+    if (!seq || seq.length === 0) {
+      return genNext(' ', rand);
+    } else if (seq in genMap) {
       return genMap[seq](rand);
     } else {
       return genNext(seq.slice(1), rand);
