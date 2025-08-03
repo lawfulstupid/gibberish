@@ -44,26 +44,24 @@ function analyse(sample: string, maxAccuracy: number = 2): NextCharGen {
 }
 
 function preprocess(sample: string): string {
-  return sample.toLowerCase()
+  return sample
+    .normalize('NFKC') // maximises compatibility of accented characters
+    .toLowerCase()
     // convert and compress whitespace to single space
     .replaceAll(/\s+/g, ' ')
     // substitute similar chars
     .replaceAll('—', '-')
-    .replaceAll(/[‘’′]/g, '\'')
-    .replaceAll(/[“”«»]/g, '"')
-    // .replaceAll(/[àáâãäå]/g, 'a')
+    .replaceAll(/[‘’`′‚]/g, '\'')
+    .replaceAll(/[“”«»„″]/g, '"')
+    // subtitute compact chars
     .replaceAll('æ', 'ae')
-    // .replaceAll('ç', 'c')
-    // .replaceAll(/[èéêë]/g, 'e')
-    // .replaceAll(/[ìíîï]/g, 'i')
-    // .replaceAll('ñ', 'n')
-    // .replaceAll(/[òóôõö]/g, 'o')
     .replaceAll('œ', 'oe')
-    // .replaceAll(/[ùúûü]/g, 'u')
-    // .replaceAll(/[ýÿ]/g, 'y')
+    .replaceAll('ß', 'ss')
     // legal characters
-    .replaceAll(/[^0-9a-zA-Z& !?,.;:'\-]/g, '')
-    .replaceAll(/('(?!\w))|((?<!\w)')/g, '')
+    // includes latin, greek, cyrillic alphabets w/ diacritics
+    // and some punctuation
+    .replaceAll(/[^0-9A-Za-zÀ-ÖØ-öø-žΆ-ώА-я& !?,.;:'\-]/g, '')
+    .replaceAll(/('(?!\w))|((?<!\w)')/g, '') // only allow apostrophes as contractions
 }
 
 function postprocess(text: string): string {
