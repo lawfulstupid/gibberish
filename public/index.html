@@ -28,11 +28,12 @@
     <textarea id="sample-custom" rows="20" cols="80" maxlength="-1"></textarea>
   </div>
   <br><br>
-  <label for="accuracy" >Accuracy</label>
+  <label for="accuracy">Accuracy</label>
   <br>
   <input id="accuracy" pattern="[0-9]+" maxlength="2" value="4"></input>
 	<button id="btnLoad" onclick="load()">Load</button>
 	<br><br>
+  <div id="loading" hidden="true"></div>
   <div id="post-load" hidden="true">
     <label for="length">Length</label>
     <br>
@@ -49,32 +50,42 @@
     document.getElementById('btnLoad').disabled = true;
     document.getElementById('post-load').hidden = true;
     document.getElementById('output').innerHTML = '';
+    const loadingMsg = document.getElementById('loading');
+    loadingMsg.innerHTML = 'Loading...';
+    loadingMsg.hidden = false;
 
-    try {
-      getSample(sample => {
-        var accuracy = document.getElementById('accuracy').value;
-        generator = createGenerator(sample, accuracy);
-        document.getElementById('post-load').hidden = false;
-      });
-    } finally {
+    getSample().then(sample => {
+      const accuracy = document.getElementById('accuracy').value;
+      generator = createGenerator(sample, accuracy);
+      document.getElementById('post-load').hidden = false;
+      loadingMsg.hidden = true;
+    })
+    .catch(err => {
+      loadingMsg.innerHTML = 'Error: ' + err;
+    })
+    .finally(() => {
       document.getElementById('btnLoad').disabled = false;
-    }
+    });
   }
 
   function generate() {
-    var length = document.getElementById('length').value;
-    var output = document.getElementById('output');
+    const btnGenerate = document.getElementById('btnGenerate');
+    btnGenerate.disabled = true;
+    const length = document.getElementById('length').value;
+    const elmOutput = document.getElementById('output');
     try {
-      output.innerHTML = generator(length);
+      elmOutput.innerHTML = generator(length);
     } catch (err) {
       console.error(err);
-      output.innerHTML = err.message;
+      elmOutput.innerHTML = err.message;
+    } finally {
+      btnGenerate.disabled = false;
     }
   }
 
   function updateSampleChoice() {
-    var sample = document.getElementById('sample').value;
-    var customSampleField = document.getElementById('sample-custom-area');
+    const sample = document.getElementById('sample').value;
+    const customSampleField = document.getElementById('sample-custom-area');
     if (!sample) {
       customSampleField.hidden = false;
     } else {
@@ -82,20 +93,26 @@
     }
   }
 
-  function getSample(next) {
-    var sampleFile = document.getElementById('sample').value;
-    if (!sampleFile) {
-      next(document.getElementById('sample-custom').value);
-    } else {
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function () {
-        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-          next(xmlhttp.responseText);
+  function getSample() {
+    return new Promise((resolve, reject) => {
+      const sampleFile = document.getElementById('sample').value;
+      if (!sampleFile) {
+        resolve(document.getElementById('sample-custom').value);
+      } else {
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState === 4) {
+            if (xmlhttp.status === 200) {
+              resolve(xmlhttp.responseText);
+            } else {
+              reject(xmlhttp.statusText);
+            }
+          }
         }
+        xmlhttp.open('GET', 'samples/' + sampleFile, true);
+        xmlhttp.send();
       }
-      xmlhttp.open('GET', 'samples/' + sampleFile, true);
-      xmlhttp.send();
-    }
+    });
   }
 
   document.getElementById('sample-custom').addEventListener('keypress', event => {
