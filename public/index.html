@@ -4,6 +4,9 @@
 	<meta charset="utf-8">
 	<title>Gibberish Generator</title>
   <link rel="stylesheet" href="styles.css">
+	<script>
+    window.global ||= window;
+  </script>
 	<script src="dist/gibberish.js"></script>
 </head>
 <body style="font-family: sans-serif">
@@ -34,7 +37,7 @@
   <input id="accuracy" pattern="[0-9]+" maxlength="2" value="4"></input>
 	<button id="btnLoad" onclick="load()">Load</button>
 	<br><br>
-  <div id="loading" hidden="true"></div>
+  <div id="info-msg"></div><br>
   <div id="post-load" hidden="true">
     <label for="length">Length</label>
     <br>
@@ -51,18 +54,19 @@
     document.getElementById('btnLoad').disabled = true;
     document.getElementById('post-load').hidden = true;
     document.getElementById('output').innerHTML = '';
-    const loadingMsg = document.getElementById('loading');
-    loadingMsg.innerHTML = 'Loading...';
-    loadingMsg.hidden = false;
+    const infoMsg = document.getElementById('info-msg');
+    infoMsg.hidden = false;
+    infoMsg.innerHTML = 'Loading...';
 
     getSample().then(sample => {
       const accuracy = document.getElementById('accuracy').value;
       generator = createGenerator(sample, accuracy);
       document.getElementById('post-load').hidden = false;
-      loadingMsg.hidden = true;
+      const mapInfo = global.mapInfo;
+      infoMsg.innerHTML = `Dictionary size: ${mapInfo.inputSize}<br>Mean branching factor: ${(mapInfo.outputSize/mapInfo.inputSize).toFixed(2)}`;
     })
     .catch(err => {
-      loadingMsg.innerHTML = 'Error: ' + err;
+      infoMsg.innerHTML = 'Error: ' + err;
     })
     .finally(() => {
       document.getElementById('btnLoad').disabled = false;

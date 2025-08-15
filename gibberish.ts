@@ -19,6 +19,11 @@ function analyse(sample: string, maxAccuracy: number = 2): NextCharGen {
     }
   }
 
+  (<any>global).mapInfo = {
+    inputSize: Object.keys(map).length,
+    outputSize: Object.values(map).reduce((s, m) => s + Object.keys(m).length, 0)
+  }
+
   // Transform into functions
   const genMap: SequenceMap<CharGen> = {};
   for (let key in map) {
