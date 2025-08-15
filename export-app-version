@@ -1,0 +1,3 @@
+#!/bin/bash
+APP_VERSION=$(node -p "require('./package.json').version")
+echo "const APP_VERSION='v$APP_VERSION'" > public/dist/version.js

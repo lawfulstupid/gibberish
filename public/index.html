@@ -7,6 +7,7 @@
 	<script>
     window.global ||= window;
   </script>
+	<script src="dist/version.js"></script>
 	<script src="dist/gibberish.js"></script>
 </head>
 <body style="font-family: sans-serif">
@@ -46,8 +47,11 @@
     <br><br>
     <span id="output"></span>
   </div>
+  <div class="footer"><a id="footer" href="http://github.com/lawfulstupid/gibberish"></a></div>
 </body>
 <script>
+  document.getElementById('footer').innerHTML = APP_VERSION;
+
   let generator = null;
 
   function load() {
